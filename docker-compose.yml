@@ -11,6 +11,8 @@ services:
     depends_on:
       - redis
       - celery_worker
+    networks:
+      - shared_network
 
   celery_worker:
     build:
@@ -22,6 +24,8 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - shared_network
 
   celery_insight:
     image: celery-insight
@@ -34,9 +38,18 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - shared_network
 
   redis:
     image: redis:6.0
     container_name: redis
     ports:
       - "6379:6379"
+    networks:
+      - shared_network
+
+networks:
+  default:
+    name: celery_testing_network
+  shared_network:
