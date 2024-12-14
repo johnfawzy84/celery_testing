@@ -28,6 +28,6 @@ def test_subtract_task(celery_app, celery_worker):
     assert result.get(timeout=10) == 6
 
 def test_chain_tasks(celery_app, celery_worker):
-    from celery import chain
+    from celery_app import chain
     result = chain(add.s(4, 6), subtract.s(2)).apply_async()
     assert result.get(timeout=10) == 8

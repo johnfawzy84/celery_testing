@@ -11,10 +11,10 @@ python = "^3.8"
 fastapi = "^0.68.0"
 celery = "^5.1.2"
 redis = "^3.5.3"
-celery-insight = "^0.1.0"
 pytest = "^6.2.4"
 pytest-celery = "^0.0.0"
 testcontainers = "^3.4.2"
+flower = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

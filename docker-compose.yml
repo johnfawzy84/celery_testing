@@ -6,9 +6,12 @@ services:
       context: .
       dockerfile: Dockerfile.fastapi
     container_name: fastapi
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["poetry","run","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "8000:8000"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
       - .:/app
     depends_on:
@@ -22,23 +25,9 @@ services:
       context: .
       dockerfile: Dockerfile.celery
     container_name: celery_worker
-    command: ["celery", "-A", "tasks", "worker", "--loglevel=info"]
+    command: ["poetry","run","celery", "-A", "tasks", "worker", "--loglevel=info"]
     depends_on:
       - redis
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    networks:
-      - shared_network
-
-  celery_insight:
-    image: celery-insight
-    container_name: celery_insight
-    ports:
-      - "5555:5555"
-    depends_on:
-      - redis
-      - celery_worker
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -54,11 +43,18 @@ services:
       - shared_network
 
   flower:
-    image: mher/flower
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
     container_name: flower
     ports:
       - "5555:5555"
-    command: ["flower", "--broker=redis://redis:6379/0"]
+    command: ["poetry","run","celery", "-A", "tasks", "flower", "--broker=redis://redis:6379/0"]
+    depends_on:
+      - fastapi
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     networks:
       - shared_network
 
