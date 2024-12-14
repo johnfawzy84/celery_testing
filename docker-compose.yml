@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: fastapi
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - celery_worker
+    networks:
+      - shared_network
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    container_name: celery_worker
+    command: ["celery", "-A", "tasks", "worker", "--loglevel=info"]
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - shared_network
+
+  celery_insight:
+    image: celery-insight
+    container_name: celery_insight
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery_worker
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - shared_network
+
+  redis:
+    image: redis:6.0
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - shared_network
+
+  flower:
+    image: mher/flower
+    container_name: flower
+    ports:
+      - "5555:5555"
+    command: ["flower", "--broker=redis://redis:6379/0"]
+    networks:
+      - shared_network
+
+networks:
+  default:
+    name: celery_testing_network
+  shared_network:

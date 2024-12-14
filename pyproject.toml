@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "celery_testing"
+version = "0.1.0"
+description = "A project to test Celery with FastAPI"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "celery_testing"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.68.0"
+celery = "^5.1.2"
+redis = "^3.5.3"
+celery-insight = "^0.1.0"
+pytest = "^6.2.4"
+pytest-celery = "^0.0.0"
+testcontainers = "^3.4.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+pytest-celery = "^0.0.0"
+testcontainers = "^3.4.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[virtualenvs]
+in-project = true
