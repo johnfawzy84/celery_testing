@@ -1,6 +1,6 @@
 from fastapi import FastAPI, BackgroundTasks
 from uuid import UUID
-from tasks import add, subtract#, chain
+from app.tasks import add, subtract#, chain
 
 app = FastAPI()
 

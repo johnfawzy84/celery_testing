@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.fastapi
     container_name: fastapi
-    command: ["poetry","run","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["poetry","run","uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "8000:8000"
     environment:
@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile.celery
     container_name: celery_worker
-    command: ["poetry","run","celery", "-A", "tasks", "worker", "--loglevel=info"]
+    command: ["poetry","run","celery", "-A", "app.tasks", "worker", "--loglevel=info"]
     depends_on:
       - redis
     environment:
@@ -49,7 +49,7 @@ services:
     container_name: flower
     ports:
       - "5555:5555"
-    command: ["poetry","run","celery", "-A", "tasks", "flower", "--broker=redis://redis:6379/0"]
+    command: ["poetry","run","celery", "-A", "app.tasks", "flower", "--broker=redis://redis:6379/0"]
     depends_on:
       - fastapi
     environment:
