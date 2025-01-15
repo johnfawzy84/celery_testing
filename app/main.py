@@ -1,6 +1,6 @@
 from fastapi import FastAPI, BackgroundTasks
 from uuid import UUID
-from app.tasks import add, subtract#, chain
+from .tasks import add, subtract, add_absolute_values, sub_absolute_values
 
 app = FastAPI()
 
@@ -10,13 +10,13 @@ async def read_root():
 
 @app.post("/tasks/add")
 async def add_task(x: int, y: int, background_tasks: BackgroundTasks):
-    task = add.apply_async(args=[x, y])
+    task = add_absolute_values(x, y)
     background_tasks.add_task(task.wait)
     return {"task_id": task.id}
 
 @app.post("/tasks/subtract")
 async def subtract_task(x: int, y: int, background_tasks: BackgroundTasks):
-    task = subtract.apply_async(args=[x, y])
+    task = sub_absolute_values(x, y)
     background_tasks.add_task(task.wait)
     return {"task_id": task.id}
 
